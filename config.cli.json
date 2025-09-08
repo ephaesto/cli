@@ -1,0 +1,6 @@
+{
+	"root": true,
+	"typeGen": "uuu",
+	"genFileExt": "json",
+	"genFileType": "camelCase"
+}
