@@ -1,0 +1,12 @@
+echo "🔍 Running Biome check..."
+
+biome check > biome-output.txt
+if grep -q "warning" biome-output.txt; then
+  echo "❌ Push blocked: Biome warnings detected."
+  cat biome-output.txt
+  rm biome-output.txt
+  exit 1
+fi
+
+echo "✅ No Biome warnings found. Push allowed."
+rm biome-output.txt

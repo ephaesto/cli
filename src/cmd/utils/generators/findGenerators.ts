@@ -1,0 +1,65 @@
+import fs from "node:fs";
+import path from "node:path";
+import chalk from "chalk";
+import { getGlobalConfig } from "~/src/config/global";
+import { getRoots, setRoots } from "~/src/config/roots";
+import { CONFIG_FILE } from "~/src/const/config";
+import { ROOTS } from "~/src/const/roots";
+import type { Generators, GeneratorsConfig } from "~/src/entities/Generators";
+import { findRoots } from "~/src/path/findRoots";
+import { removeLine } from "~/src/prompts/removeLine";
+import { searchList } from "~/src/prompts/searchList";
+import { logger } from "~/src/utils/logger";
+import { readJson } from "~/src/utils/readJson";
+
+export const findGenerators = async (
+	{ subGenConf, ...generatorsConfig }: GeneratorsConfig,
+	typeGen?: string,
+): Promise<Generators> => {
+	if (!subGenConf) {
+		return generatorsConfig as Generators;
+	}
+	if (typeGen && generatorsConfig[typeGen]) {
+		return generatorsConfig[typeGen] as Generators;
+	}
+	let rootTypeGen = null;
+	if (!typeGen) {
+		let parent = getRoots(ROOTS.PARENT);
+		if (!parent) {
+			const currentRoots = findRoots();
+			if (currentRoots?.["~"]) {
+				setRoots(currentRoots);
+			}
+			parent = currentRoots["~"];
+		}
+		const parentConfig = path.join(
+			parent || "./",
+			getGlobalConfig()?.configFile || CONFIG_FILE,
+		);
+		if (fs.existsSync(parentConfig)) {
+			const { typeGen } = readJson(parentConfig);
+			rootTypeGen = typeGen || "NO_TYPE";
+		}
+	}
+
+	if (
+		rootTypeGen &&
+		rootTypeGen !== "NO_TYPE" &&
+		generatorsConfig[rootTypeGen]
+	) {
+		return generatorsConfig[rootTypeGen] as Generators;
+	}
+	if (typeGen || (rootTypeGen && rootTypeGen !== "NO_TYPE")) {
+		logger(
+			chalk.yellow.bold("⚠"),
+			chalk.yellow("Type Generators"),
+			chalk.cyanBright(typeGen || rootTypeGen),
+			chalk.yellow("isn't in the list"),
+		);
+	}
+	const typeGenList = Object.keys(generatorsConfig);
+	const message = "Please choose a type of generator list";
+	const type = await searchList({ message, list: typeGenList });
+	removeLine(1);
+	return generatorsConfig[type] as Generators;
+};
