@@ -1,0 +1,1 @@
+export { constructorPlop } from "./constructorPlop";
