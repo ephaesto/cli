@@ -1,0 +1,1 @@
+export { setupStdoutMatchers } from "./setupStdoutMatchers";

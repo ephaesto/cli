@@ -1,0 +1,44 @@
+{
+	"main": "./bin/index.js",
+	"type": "module",
+	"name": "grim",
+	"version": "0.0.0",
+	"scripts": {
+		"test": "vitest run --coverage",
+		"test:watch": "vitest --coverage",
+		"check": "biome check --write",
+		"prepare": "husky"
+	},
+	"bin": {
+		"grim": "./bin/index.ts"
+	},
+	"dependencies": {
+		"@inquirer/prompts": "^7.8.4",
+		"@types/lodash.merge": "^4.6.9",
+		"@types/lodash.mergewith": "^4.6.9",
+		"@types/node": "^24.9.1",
+		"chalk": "^5.6.2",
+		"commander": "^14.0.1",
+		"lodash.merge": "^4.6.2",
+		"lodash.mergewith": "^4.6.2",
+		"node-plop": "^0.32.3",
+		"ora": "^9.0.0"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "2.2.7",
+		"@commitlint/cli": "^20.1.0",
+		"@commitlint/config-conventional": "^20.0.0",
+		"@vitest/coverage-v8": "4.0.0",
+		"husky": "^9.1.7",
+		"lint-staged": "^16.2.5",
+		"vitest": "^4.0.0"
+	},
+	"lint-staged": {
+		"*.{js,ts,d.ts,jsx,tsx,json}": [
+			"biome check --write --no-errors-on-unmatched",
+			"biome check --write --unsafe --no-errors-on-unmatched",
+			"biome format --write --no-errors-on-unmatched",
+			"biome lint --write --no-errors-on-unmatched"
+		]
+	}
+}
